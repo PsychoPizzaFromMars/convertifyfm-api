@@ -6,7 +6,7 @@ authors = ["Andrew Borovikov"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "~3.8"
+python = "^3.7"
 asgiref = "3.4.1"
 certifi = "2021.5.30"
 cffi = "1.14.6"

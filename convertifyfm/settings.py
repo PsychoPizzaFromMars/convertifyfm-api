@@ -26,20 +26,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEBUG = config("DEBUG", default=False, cast=bool)
 
 # SECURITY WARNING: keep the secret key used in production secret!
-if not DEBUG:
-    SECRET_KEY = config("SECRET_KEY")
-else:
-    SECRET_KEY = "django-insecure-gt$_k-5thr+oewnfuqa9o6y)ci)9s=-@#ge_n2fv-vu!japjh0"
+SECRET_KEY = config("SECRET_KEY")
 
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # ALLOWED_HOSTS = config("ALLOWED_HOSTS").split(" ")
-if not DEBUG:
-    ALLOWED_HOSTS = config("ALLOWED_HOSTS", default=os.getenv("ALLOWED_HOSTS")).split(
-        " "
-    )
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", default=os.getenv("ALLOWED_HOSTS")).split(
+    " "
+)
 
 
 # Application definition
@@ -88,19 +84,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "convertifyfm.wsgi.application"
 
-
-if DEBUG:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
-else:
-    DATABASES = {
-        "default": dj_database_url.parse(config("DATABASE_URL"), conn_max_age=600)
-    }
-
+DATABASES = {
+    "default": dj_database_url.parse(config("DATABASE_URL"), conn_max_age=600)
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -149,20 +135,14 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # HTTPS settings
-
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
+
 CSRF_COOKIE_SAMESITE = 'None'
 SESSION_COOKIE_SAMESITE = 'None'
 
 # CORS
-if DEBUG:
-    CORS_ALLOWED_ORIGINS = [
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-    ]
-else:
-    CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS").split(" ")
+CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS").split(" ")
 
 CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
 CORS_ALLOW_CREDENTIALS = True

@@ -74,20 +74,23 @@ def spotify_login(request):
 def spotify_callback(request):
     if not request.session.exists(request.session.session_key):
         request.session.create()
-
     code = request.GET.get("code", "")
     error = request.GET.get("error", "")
 
     if error:
-        return Response({"error": {
-            "message": "Something went wrong",
-            "status": status.HTTP_400_BAD_REQUEST,
-            "details": error, }},
-            status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {
+                "error": {
+                    "message": "Something went wrong",
+                    "status": status.HTTP_400_BAD_REQUEST,
+                    "details": error,
+                }
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
     sp = Spotify_API()
     sp_tokens = sp.get_tokens(code)
-
     ut.update_or_create_user_tokens(
         session_id=request.session.session_key,
         access_token=sp_tokens.get("access_token", ""),
@@ -95,7 +98,6 @@ def spotify_callback(request):
         expires_in=sp_tokens.get("expires_in", ""),
         refresh_token=sp_tokens.get("refresh_token", ""),
     )
-
     return redirect(FRONTEND_URL)
 
 
@@ -164,10 +166,10 @@ def spotify_get_user_top_tracks(request):
                 "error": {
                     "message": "Please sign in",
                     "status_code": status.HTTP_401_UNAUTHORIZED,
-                    "details": "User is not authenticated"
+                    "details": "User is not authenticated",
                 }
             },
-            status=status.HTTP_401_UNAUTHORIZED
+            status=status.HTTP_401_UNAUTHORIZED,
         )
 
     serializer = SpotifyUserTopTracksSerializer(data=request.data)
@@ -180,7 +182,8 @@ def spotify_get_user_top_tracks(request):
                     "details": serializer.errors,
                 }
             },
-            status=status.HTTP_400_BAD_REQUEST)
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
     SP = Spotify_API()
     playlist = SP.create_playlist(
@@ -200,21 +203,25 @@ def spotify_get_user_top_tracks(request):
     ]
 
     response = SP.add_tracks(
-        access_token=user.access_token,
-        playlist_id=playlist["id"],
-        uris=top_tracks
+        access_token=user.access_token, playlist_id=playlist["id"], uris=top_tracks
     )
     if "snapshot_id" in response:
         return Response(
-            {"message": "Tracks successful added to playlist"},
-            status=status.HTTP_200_OK)
+            {"message": "Tracks successfully added to playlist"},
+            status=status.HTTP_200_OK,
+        )
     return Response(
-        {"error": {
-            "message": "Something went wrong",
-            "status": status.HTTP_400_BAD_REQUEST,
-            "details": response.get("error").get("message") if response.get("error") else "Details not provided"
-        }},
-        status=status.HTTP_400_BAD_REQUEST)
+        {
+            "error": {
+                "message": "Something went wrong",
+                "status": status.HTTP_400_BAD_REQUEST,
+                "details": response.get("error").get("message")
+                if response.get("error")
+                else "Details not provided",
+            }
+        },
+        status=status.HTTP_400_BAD_REQUEST,
+    )
 
 
 @api_view(["POST"])
@@ -228,10 +235,10 @@ def spotify_search(request):
                 "error": {
                     "message": "Please sign in",
                     "status_code": status.HTTP_401_UNAUTHORIZED,
-                    "details": "User is not authenticated"
+                    "details": "User is not authenticated",
                 }
             },
-            status=status.HTTP_401_UNAUTHORIZED
+            status=status.HTTP_401_UNAUTHORIZED,
         )
 
     SP = Spotify_API()
@@ -242,16 +249,14 @@ def spotify_search(request):
                 "error": {
                     "message": "Tracklist is empty",
                     "status_code": status.HTTP_400_BAD_REQUEST,
-                    "details": "No tracks provided"
+                    "details": "No tracks provided",
                 }
             },
-            status=status.HTTP_400_BAD_REQUEST
+            status=status.HTTP_400_BAD_REQUEST,
         )
     tracklist_spotify = list()
     tracklist_missing = list()
 
-    # To be changed to 5 search results per track query (SP.search()['tracks']['items'][:5])
-    # and then chosen on frontend (some info will be used for track card in UI)
     for track in tracklist_raw:
         try:
             ts = SP.search(access_token=user.access_token, query=track)["tracks"][
@@ -288,10 +293,10 @@ def spotify_create_playlist(request):
                 "error": {
                     "message": "Please sign in",
                     "status_code": status.HTTP_401_UNAUTHORIZED,
-                    "details": "User is not authenticated"
+                    "details": "User is not authenticated",
                 }
             },
-            status=status.HTTP_401_UNAUTHORIZED
+            status=status.HTTP_401_UNAUTHORIZED,
         )
 
     if not request.data.get("tracks"):
@@ -300,10 +305,10 @@ def spotify_create_playlist(request):
                 "error": {
                     "message": "Tracklist is empty",
                     "status_code": status.HTTP_400_BAD_REQUEST,
-                    "details": "No tracks provided"
+                    "details": "No tracks provided",
                 }
             },
-            status=status.HTTP_400_BAD_REQUEST
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
     SP = Spotify_API()
@@ -327,11 +332,17 @@ def spotify_create_playlist(request):
     if "snapshot_id" in response:
         return Response(
             {"message": "Tracks successful added to playlist"},
-            status=status.HTTP_200_OK)
+            status=status.HTTP_200_OK,
+        )
     return Response(
-        {"error": {
-            "message": "Something went wrong",
-            "status": status.HTTP_400_BAD_REQUEST,
-            "details": response.get("error").get("message") if response.get("error") else "Details not provided"
-        }},
-        status=status.HTTP_400_BAD_REQUEST)
+        {
+            "error": {
+                "message": "Something went wrong",
+                "status": status.HTTP_400_BAD_REQUEST,
+                "details": response.get("error").get("message")
+                if response.get("error")
+                else "Details not provided",
+            }
+        },
+        status=status.HTTP_400_BAD_REQUEST,
+    )

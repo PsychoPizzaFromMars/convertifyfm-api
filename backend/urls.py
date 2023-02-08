@@ -20,7 +20,6 @@ urlpatterns = [
     # LastFM API
     path('lastfm/user_top_tracks', views.lastfm_get_top_tracks,
          name='lastfm-user-top-tracks'),
-    # path('lastfm/user_recent_tracks', views.lastfm_get_recent_tracks, name='lastfm-user-recent-tracks'),
     path('lastfm/user_weekly_charts', views.lastfm_get_weekly_top_tracks,
          name='lastfm-user-weekly-trackchart'),
 

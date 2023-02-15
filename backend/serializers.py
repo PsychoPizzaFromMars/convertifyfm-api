@@ -29,8 +29,6 @@ class LastfmWeeklyChartsSerializer(serializers.Serializer):
 
 
 class SpotifyUserTopTracksSerializer(serializers.Serializer):
-    playlist_name = serializers.CharField(
-        max_length=256, default='My Top Spotify Tracks')
     time_range = serializers.ChoiceField(
         choices=['long_term', 'medium_term', 'short_term'], default='medium_term')
     limit = serializers.IntegerField(min_value=1, max_value=50, default=50)
